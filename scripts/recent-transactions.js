@@ -8,11 +8,31 @@ const instaEventContractAddress = '0x2af7ea6Cb911035f3eb1ED895Cb6692C39ecbA97';
 const instaEventContract = new web3.eth.Contract(instaEventContractABI, instaEventContractAddress);
 
 instaEventContract.getPastEvents('LogEvent', {
-    fromBlock: 0,
+    fromBlock: 9747290,
     toBlock: 'latest'  
 }, (error, events) => {
-    for(var i = 0; i < events.length; i++) {
-        console.log(events[i].transactionHash);
+    if(events) {
+
+        for(var i = events.length - 1; i > events.length - 6; i--) {
+
+            const txHash = events[i].transactionHash;
+            
+            web3.eth.getTransactionReceipt(txHash, (error, receipt) => {
+                if(receipt) {
+                    console.log({
+                        txHash: txHash,
+                        from: receipt.from,
+                        to: receipt.to,
+                        gasUsed: receipt.gasUsed
+                    })
+                }
+                else {
+                    console.log(error);
+                }
+            })
+        }
+    } else {
+        console.log(error);
     }
 })
 
